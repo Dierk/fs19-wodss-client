@@ -4,3 +4,4 @@
          - use language level ES6
          - use JS module system and rollup as bundler
          - use testing "framework" from web programming module
+         - start with a simple and fixed-size project allocation view (drag-and-drop)

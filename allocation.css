@@ -1,0 +1,45 @@
+body {
+    margin: 2em;
+}
+
+main {
+    display: grid;
+    grid-template-columns: 1fr 1fr ;
+    grid-gap: 2em;
+    grid-template-areas:
+        "begindate  enddate   "
+        "developers projects   "
+        "status     status    ";
+}
+#begindate {
+    grid-area: begindate;
+}
+#enddate {
+    grid-area: enddate;
+}
+#projects {
+    grid-area: projects;
+}
+#developers {
+    grid-area: developers;
+}
+#status {
+    grid-area: status;
+}
+.project, .developer {
+    height: 5em;
+    width: 62%;
+    border: 2px solid gray;
+    border-radius: 1em;
+    margin-top: 1em;
+    padding: 1em;
+}
+.project {
+    background: lightblue;
+}
+.developer {
+    background: palegoldenrod;
+}
+.drop {
+    border: 10px solid grey;
+}
