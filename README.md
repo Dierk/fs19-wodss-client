@@ -1,7 +1,5 @@
 # fs19-wodss-client
 
-[View content as HTML](https://dierk.github.io/fs19-wodss-client/)
-
 [AllTests from bundle](https://dierk.github.io/fs19-wodss-client/allTests.html)\
 [AllTests asynchronous](https://dierk.github.io/fs19-wodss-client/allTestsAsync.html)
 

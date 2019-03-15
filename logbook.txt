@@ -3,3 +3,4 @@
 15.03.19 Start project as requested by the students :-)
          - use language level ES6
          - use JS module system and rollup as bundler
+         - use testing "framework" from web programming module
