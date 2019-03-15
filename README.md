@@ -8,7 +8,9 @@
 
 ## Build instructions
 
-For running the code that is build on the ES6 module system you either
+When visiting the repository through github, one can just click on the links above.
+
+When checking out and running the code locally, you either
 - have to run a local server like with `npx http-server -c-1` or
 - use a bundler like webpack, parcel, or [rollup](https://rollupjs.org), e.g.
   - install a recent node.js and npm
