@@ -1,10 +1,10 @@
 # fs19-wodss-client
 
+[Project allocation](https://dierk.github.io/fs19-wodss-client/ProjectAllocation.html)
+
+
 [AllTests from bundle](https://dierk.github.io/fs19-wodss-client/allTests.html)\
 [AllTests asynchronous](https://dierk.github.io/fs19-wodss-client/allTestsAsync.html)
-
-[Project allocation]((https://dierk.github.io/fs19-wodss-client/ProjectAllocation.html))
-
 
 ## Build instructions
 
