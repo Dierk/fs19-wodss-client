@@ -376,4 +376,100 @@ churchSuite.add("choice", assert => {
 
 churchSuite.run();
 
+function h(name, attributes, node) {
+    const children =
+        node instanceof Array
+        ? node
+        : node != null ? [node] : [];
+    return {
+        name:       name,
+        attributes: attributes || {},
+        children:   children
+    }
+}
+function mini(view, initialState, root) {
+    let state = initialState;
+    let place = render(view(act, state));
+    root.appendChild(place);
+
+    function render(node) {
+        if (typeof node === "string" ||
+            typeof node === "number") {
+            return document.createTextNode(node)
+        }
+        const element = document.createElement(node.name);
+        for (let key in node.attributes) {
+            const value = node.attributes[key];
+            if (typeof value === "function") {
+                element.addEventListener(key, value);
+            } else {
+                element.setAttribute(key, value);
+            }
+        }
+        node.children.forEach(child => element.appendChild(render(child)));
+        return element;
+    }
+    function refresh() {
+        const newView = render(view(act, state), root);
+        root.replaceChild(newView, place);
+        place = newView;
+    }
+    function act(action) { return () => { state = action(state); refresh(); } }
+}
+
+const miniSuite = Suite("mini");
+
+miniSuite.add("counter", assert => {
+    // setup
+    const miniContainer = document.createElement("div");
+    const miniRoot = document.createElement("div");
+    miniContainer.appendChild(miniRoot);
+    document.getElementsByTagName("body")[0].appendChild(miniContainer);
+
+    const actions = {
+        dec : state => state - 1,
+        inc : state => state + 1
+    };
+
+
+    const view = (act, state) =>
+        h("div", {id: "holder"}, [
+            h("h1",     { style: "color:red"      }, state),
+            h("button", { id: "minus",click: act(actions.dec) }, "-"),                  // declarative variant
+            h("button", { id: "plus", click: act(actions.inc) }, "+"),
+            h("button", { id: "reset",click: act(_ => 0 )     }, "0"),                  // inline variant
+            ...Array.from( {length: state} , (v,x) => h("p", {}, x) ),    // dynamic element count
+            h("p",{}, state < 0 ? "negative not supported" : ""),           // conditional entries
+        ]);
+
+    mini(view, 0, miniRoot); // initial state is 0
+
+    // stimuli and assertions
+
+    assert.is(5 + 0, document.getElementById("holder").childElementCount);
+
+    document.getElementById("plus").click();
+
+    assert.is(5 + 1, document.getElementById("holder").childElementCount);
+
+    document.getElementById("minus").click();
+
+    assert.is(5 + 0, document.getElementById("holder").childElementCount);
+
+    document.getElementById("minus").click();
+
+    assert.is("negative not supported", document.getElementById("holder").childNodes[4].textContent);
+
+    document.getElementById("reset").click();
+
+    assert.is(5 + 0, document.getElementById("holder").childElementCount);
+
+    // cleanup
+
+    document.getElementsByTagName("body")[0].removeChild(miniContainer);
+});
+
+
+miniSuite.run();
+
 // importing all tests that make up the suite of tests that are build on the ES6 module system

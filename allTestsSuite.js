@@ -5,3 +5,4 @@
 import './util/timesTest.js'
 import './util/stringsTest.js'
 import './church/churchTest.js'
+import './mini/miniTest.js'
