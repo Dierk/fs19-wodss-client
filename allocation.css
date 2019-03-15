@@ -1,5 +1,6 @@
 body {
     margin: 2em;
+    font-family: "Helvetica Neue", Arial, sans-serif;
 }
 
 main {
@@ -31,7 +32,7 @@ main {
     width: 62%;
     border: 2px solid gray;
     border-radius: 1em;
-    margin-top: 1em;
+    margin-top: 0.5em;
     padding: 1em;
 }
 .project {
@@ -41,5 +42,8 @@ main {
     background: palegoldenrod;
 }
 .drop {
-    border: 10px solid grey;
+    box-shadow: 0 0 0.5em 0.5em palegoldenrod;
+}
+button {
+    font-size: 1em;
 }
