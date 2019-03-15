@@ -3,28 +3,25 @@ import { Suite } from "../test/test.js"
 
 const util_times = Suite("util-times");
 
-// extending the prototype of many objects
-util_times.add("num", assert => {
+util_times.add("str", assert => {
 
-    const collect = [];
+    const first10 = '10'.times( x => x);
 
-    (10).times( n => collect.push(n) );
+    assert.is(first10.length, 10);
+    assert.is(first10[0], 0);
+    assert.is(first10[9], 9);
 
-    assert.is(collect.length, 10);
-    assert.is(collect[0], 0);
-    assert.is(collect[9], 9);
+    assert.is(64, '8'.times(x => (x+1) * (x+1)).reverse()[0] )
 
 });
 
-util_times.add("str", assert => {
+util_times.add("num", assert => {
 
-    const collect = [];
+    const first10 = (10).times( x => x);
 
-    '10'.times( n => collect.push(n) );
-
-    assert.is(collect.length, 10);
-    assert.is(collect[0], 0);
-    assert.is(collect[9], 9);
+    assert.is(first10.length, 10);
+    assert.is(first10[0], 0);
+    assert.is(first10[9], 9);
 
 });
 

@@ -1,5 +1,7 @@
 // church encoding of the lambda calculus in JavaScript
 
+import "../util/times.js"
+
 export {
     id, konst, flip, kite, cmp,
     Pair, fst, snd,
@@ -36,7 +38,7 @@ const uncurry = f => (x,y) => f(x)(y);
 
 const Tuple = n => [
     parmStore (n + 1) ( [] ) (parms => parms.reduce( (accu, it) => accu(it), parms.pop() ) ), // ctor
-    ...Array.from( {length:n}, (it, idx) => iOfN (n) (idx) () )                               // selectors
+    ...n.times( idx => iOfN (n) (idx) () )                               // selectors
 ];
 
 const iOfN = n => i => value => // from n curried params, take argument at position i,
@@ -51,7 +53,7 @@ const parmStore = n => args => onDone =>  // n args to come
     : arg => parmStore(n - 1)([...args, arg]) (onDone); // store parms in array
 
 const EitherOf = n => [
-    ...Array.from( {length:n}, (it, idx) => parmStore(n+1) ([]) (parms => parms[idx+1] (parms[0]) ) ), // ctors
+    ...n.times( idx => parmStore(n+1) ([]) (parms => parms[idx+1] (parms[0]) ) ), // ctors
     id
 ];
 

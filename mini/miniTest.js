@@ -1,5 +1,6 @@
 import { Suite }            from "../test/test.js"
 import { h, mini }          from "./mini.js";
+import                           "../util/times.js"
 
 const miniSuite = Suite("mini");
 
@@ -19,10 +20,10 @@ miniSuite.add("counter", assert => {
     const view = (act, state) =>
         h("div", {id: "holder"}, [
             h("h1",     { style: "color:red"      }, state),
-            h("button", { id: "minus",click: act(actions.dec) }, "-"),                  // declarative variant
+            h("button", { id: "minus",click: act(actions.dec) }, "-"),      // declarative variant
             h("button", { id: "plus", click: act(actions.inc) }, "+"),
-            h("button", { id: "reset",click: act(_ => 0 )     }, "0"),                  // inline variant
-            ...Array.from( {length: state} , (v,x) => h("p", {}, x) ),    // dynamic element count
+            h("button", { id: "reset",click: act(_ => 0 )     }, "0"),      // inline variant
+            ...state.times( x => h("p", {}, x) ),                           // dynamic element count
             h("p",{}, state < 0 ? "negative not supported" : ""),           // conditional entries
         ]);
 

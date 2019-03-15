@@ -1,12 +1,15 @@
 // times utility
+// can be used with a result [0...x-1] or to just do something x times.
 
-const timesFunction = function(callback) {
+const timesFunction = function(indexToValue) {
   if( isNaN(parseInt(Number(this.valueOf()))) ) {
     throw new TypeError("Object is not a valid number");
   }
+  const result = [];
   for (let i = 0; i < Number(this.valueOf()); i++) {
-    callback(i);
+    result.push(indexToValue(i));
   }
+  return result;
 };
 
 String.prototype.times = timesFunction;
@@ -61,7 +64,7 @@ const uncurry = f => (x,y) => f(x)(y);
 
 const Tuple = n => [
     parmStore (n + 1) ( [] ) (parms => parms.reduce( (accu, it) => accu(it), parms.pop() ) ), // ctor
-    ...Array.from( {length:n}, (it, idx) => iOfN (n) (idx) () )                               // selectors
+    ...n.times( idx => iOfN (n) (idx) () )                               // selectors
 ];
 
 const iOfN = n => i => value => // from n curried params, take argument at position i,
@@ -76,7 +79,7 @@ const parmStore = n => args => onDone =>  // n args to come
     : arg => parmStore(n - 1)([...args, arg]) (onDone); // store parms in array
 
 const EitherOf = n => [
-    ...Array.from( {length:n}, (it, idx) => parmStore(n+1) ([]) (parms => parms[idx+1] (parms[0]) ) ), // ctors
+    ...n.times( idx => parmStore(n+1) ([]) (parms => parms[idx+1] (parms[0]) ) ), // ctors
     id
 ];
 
@@ -173,28 +176,25 @@ function bar(extend) {
 
 const util_times = Suite("util-times");
 
-// extending the prototype of many objects
-util_times.add("num", assert => {
+util_times.add("str", assert => {
 
-    const collect = [];
+    const first10 = '10'.times( x => x);
 
-    (10).times( n => collect.push(n) );
+    assert.is(first10.length, 10);
+    assert.is(first10[0], 0);
+    assert.is(first10[9], 9);
 
-    assert.is(collect.length, 10);
-    assert.is(collect[0], 0);
-    assert.is(collect[9], 9);
+    assert.is(64, '8'.times(x => (x+1) * (x+1)).reverse()[0] );
 
 });
 
-util_times.add("str", assert => {
+util_times.add("num", assert => {
 
-    const collect = [];
+    const first10 = (10).times( x => x);
 
-    '10'.times( n => collect.push(n) );
-
-    assert.is(collect.length, 10);
-    assert.is(collect[0], 0);
-    assert.is(collect[9], 9);
+    assert.is(first10.length, 10);
+    assert.is(first10[0], 0);
+    assert.is(first10[9], 9);
 
 });
 
@@ -435,10 +435,10 @@ miniSuite.add("counter", assert => {
     const view = (act, state) =>
         h("div", {id: "holder"}, [
             h("h1",     { style: "color:red"      }, state),
-            h("button", { id: "minus",click: act(actions.dec) }, "-"),                  // declarative variant
+            h("button", { id: "minus",click: act(actions.dec) }, "-"),      // declarative variant
             h("button", { id: "plus", click: act(actions.inc) }, "+"),
-            h("button", { id: "reset",click: act(_ => 0 )     }, "0"),                  // inline variant
-            ...Array.from( {length: state} , (v,x) => h("p", {}, x) ),    // dynamic element count
+            h("button", { id: "reset",click: act(_ => 0 )     }, "0"),      // inline variant
+            ...state.times( x => h("p", {}, x) ),                           // dynamic element count
             h("p",{}, state < 0 ? "negative not supported" : ""),           // conditional entries
         ]);
 
