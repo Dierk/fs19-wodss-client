@@ -36,11 +36,13 @@ const actions = {
     status:    msg => side(state => state.status = msg),
 };
 
+const date = (label, id) => (act, state) =>
+    h("div", { id: id }, label + " Date: " + state[id].toLocaleDateString());
 
 const view = (act, state) =>
     h("main", {}, [
-        h("div", { id: "beginDate" }, "Begin Date: " + state.beginDate.toLocaleDateString()),
-        h("div", { id: "endDate"   }, "End Date: "   + state.endDate.toLocaleDateString()),
+        date('Begin', 'beginDate')(act, state),
+        date('End',   'endDate')  (act, state),
 
         h("div", {id: "developers"}, [
             h("button", { click: act(actions.addDev) }, "+"),

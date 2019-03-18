@@ -1,4 +1,9 @@
 
+18.03.19 put date "component" into it's own function
+         - drag and drop does not support touch events for mobile devices
+           touchstart, touchmove, touchend would need to handle x,y positions manually
+           or we would need a dependency like interact.js.
+           Decision: leave this for the moment. It is not essential.
 
 15.03.19 Start project as requested by the students :-)
          - use language level ES6
