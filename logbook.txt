@@ -1,5 +1,5 @@
 
-18.03.19 put date "component" into it's own function
+18.03.19 put datePicker "component" into it's own file, use dropdown as date picker
          - drag and drop does not support touch events for mobile devices
            touchstart, touchmove, touchend would need to handle x,y positions manually
            or we would need a dependency like interact.js.
