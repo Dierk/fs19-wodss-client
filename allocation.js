@@ -1,4 +1,5 @@
 import {h, mini} from "./mini/mini.js";
+import {view as dateView} from "./datePicker.js"
 
 const content = document.getElementById("content");
 
@@ -36,13 +37,10 @@ const actions = {
     status:    msg => side(state => state.status = msg),
 };
 
-const date = (label, id) => (act, state) =>
-    h("div", { id: id }, label + " Date: " + state[id].toLocaleDateString());
-
 const view = (act, state) =>
     h("main", {}, [
-        date('Begin', 'beginDate')(act, state),
-        date('End',   'endDate')  (act, state),
+        dateView('Begin', 'beginDate')(act, state),
+        dateView('End',   'endDate')  (act, state),
 
         h("div", {id: "developers"}, [
             h("button", { click: act(actions.addDev) }, "+"),
