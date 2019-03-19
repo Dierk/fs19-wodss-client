@@ -15,7 +15,7 @@ const view = (label, id) => (act, state) =>
     h("div", { id: id }, [
         label + " Date: " + state[id].toLocaleDateString(),
         h("select", {change: evt => act( actions.setDay(id, value(evt)))   () }, (31).times( day =>
-            h("option",  state[id].getUTCDate() === day ? {selected:true} : {value: day}, (day+1).toString() )
+            h("option",  state[id].getUTCDate() === day+1 ? {selected:true} : {value: day+1}, (day+1).toString() )
         ) ),
         h("select", {change: evt => act( actions.setMonth(id, value(evt))) ()}, (12).times( month =>
             h("option", state[id].getUTCMonth() === month ? {selected:true} :{value: month}, (month+1).toString() )
