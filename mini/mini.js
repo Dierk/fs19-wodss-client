@@ -38,5 +38,5 @@ function mini(view, initialState, root) {
         root.replaceChild(newView, place);
         place = newView;
     }
-    function act(action) { return (event) => { state = action(state, event); refresh() } }
+    function act(action) { return (event) => { state = action(state, event) || state; refresh() } }
 }

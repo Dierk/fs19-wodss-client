@@ -27,14 +27,12 @@ const initialState = {
     status:     ""
 };
 
-const side = effect => state => { effect(state); return state;};
-
 const actions = {
-    addDev:           side(state => state.developers.push( {id:nextDevId++})),
-    addPro:           side(state => state.projects.push(   {id:nextProId++})),
-    removeDev: id  => side(state => state.developers = state.developers.filter(dev => dev.id !== id) ),
-    removePro: id  => side(state => state.projects   = state.projects.  filter(pro => pro.id !== id) ),
-    status:    msg => side(state => state.status = msg),
+    addDev:           state => { state.developers.push( {id:nextDevId++}) },
+    addPro:           state => { state.projects.push(   {id:nextProId++}) },
+    removeDev: id  => state => { state.developers = state.developers.filter(dev => dev.id !== id)  },
+    removePro: id  => state => { state.projects   = state.projects.  filter(pro => pro.id !== id)  },
+    status:    msg => state => { state.status = msg },
 };
 
 const view = (act, state) =>

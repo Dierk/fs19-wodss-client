@@ -6,9 +6,9 @@ export { view }
 const value = evt => evt.srcElement.options[evt.srcElement.selectedIndex].value;
 
 const actions = {
-    setDay:   id => (state, evt) => { state[id].setUTCDate(value(evt));      return state;},
-    setMonth: id => (state, evt) => { state[id].setUTCMonth(value(evt));   return state;},
-    setYear:  id => (state, evt) => { state[id].setUTCFullYear(value(evt)); return state;}
+    setDay:   id => (state, evt) => { state[id].setUTCDate(value(evt))     },
+    setMonth: id => (state, evt) => { state[id].setUTCMonth(value(evt))    },
+    setYear:  id => (state, evt) => { state[id].setUTCFullYear(value(evt)) }
 };
 
 const view = (label, id) => (act, state) =>
