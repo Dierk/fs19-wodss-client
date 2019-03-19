@@ -5,10 +5,16 @@ export { view }
 
 const value = evt => evt.srcElement.options[evt.srcElement.selectedIndex].value;
 
+const constrain = state => {
+  if (state.endDate < state.beginDate) { // end date must not be before begin date
+      state.endDate = new Date(state.beginDate);
+  }
+};
+
 const actions = {
-    setDay:   id => (state, evt) => { state[id].setUTCDate(value(evt))     },
-    setMonth: id => (state, evt) => { state[id].setUTCMonth(value(evt))    },
-    setYear:  id => (state, evt) => { state[id].setUTCFullYear(value(evt)) }
+    setDay:   id => (state, evt) => { state[id].setUTCDate(value(evt))    ; constrain(state);},
+    setMonth: id => (state, evt) => { state[id].setUTCMonth(value(evt))   ; constrain(state);},
+    setYear:  id => (state, evt) => { state[id].setUTCFullYear(value(evt)); constrain(state);}
 };
 
 const view = (label, id) => (act, state) =>
