@@ -1,6 +1,6 @@
 body {
     margin: 2em;
-    font-family: "Helvetica Neue", Arial, sans-serif;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
 }
 
 main {
@@ -8,9 +8,9 @@ main {
     grid-template-columns: 1fr 1fr ;
     grid-gap: 2em;
     grid-template-areas:
-        "begindate  enddate   "
-        "developers projects   "
-        "status     status    ";
+        'begindate  enddate   '
+        'developers projects   '
+        'status     status    ';
 }
 #begindate {
     grid-area: begindate;
@@ -31,7 +31,7 @@ main {
     height: 5em;
     width: 62%;
     border: 2px solid gray;
-    border-radius: 1em;
+    border-radius: 0.5em;
     margin-top: 0.5em;
     padding: 1em;
 }
@@ -39,7 +39,9 @@ main {
     background: lightblue;
 }
 .developer {
-    background: palegoldenrod;
+    background-image: url("data:image/svg+xml;utf8,<svg width='100%' height='100%' version='1.1' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'><defs /><g id='layer1'><rect x='0' y='0' width='100' height='100' stroke-opacity='0' fill='#7A7AA2' /></g><g id='layer2'><path d='M0 0 L66 0 L33 100 L0 100 Z ' stroke-opacity='0' fill='#8A8AB2'/></g></svg>");
+    background-size: cover;
+    color: white;
 }
 .drop {
     box-shadow: 0 0 0.5em 0.5em palegoldenrod;
