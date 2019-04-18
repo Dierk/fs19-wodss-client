@@ -7,12 +7,16 @@ body {
 
 main {
     display: grid;
+    /*height: 100%; this keeps the vanishing point of the perspective fixed but also centers vertically*/
     grid-template-columns: 1fr 1fr ;
     grid-gap: 1em;
     grid-template-areas:
         'begindate  enddate   '
         'developers projects   '
         'status     status    ';
+}
+#content {
+    /*height: 100%; propagate the full height if needed*/
 }
 #begindate {
     grid-area: begindate;
@@ -53,9 +57,11 @@ main {
 }
 .developer:hover {
     box-shadow: -.2em .2em .2em .2em rgba(0,0,0,.2);
+    transform: translateZ(1em) translateX(.5em) rotateY(20deg);
 }
 .project:hover {
     box-shadow:  .2em .2em .2em .2em rgba(0,0,0,.2);
+    transform: translateZ(1em) translateX(-.5em) rotateY(-20deg);
 }
 
 .drop {
