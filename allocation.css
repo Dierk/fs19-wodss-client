@@ -14,7 +14,7 @@ main {
         'developers projects   '
         'status     status    ';
 }
-#4040begindate {
+#begindate {
     grid-area: begindate;
 }
 #enddate {
@@ -40,21 +40,22 @@ main {
     padding: 1em;
 }
 .project {
-    background-image: url("data:image/svg+xml;utf8,<svg width='100%' height='100%' version='1.1' viewBox='0 0 100 100' style='background-color:#76B2AE' xmlns='http://www.w3.org/2000/svg'><defs /><path d='M0 0 L70 0 L40 100 L0 100 Z ' stroke-opacity='0' fill='#739996'/></svg>");
-    background-size: cover;
+    background: linear-gradient(110deg, #8bb1ae, #739996 60%, #8cc9c5 60%, #76B2AE);
     color: white;
     transform: rotateY(-20deg);
     transform-origin: right center;
 }
 .developer {
-    background-image: url("data:image/svg+xml;utf8,<svg width='100%' height='100%' version='1.1' viewBox='0 0 100 100' style='background-color:#7A7AA2' xmlns='http://www.w3.org/2000/svg'><defs /><path d='M0 0 L40 0 L20 100 L0 100 Z ' stroke-opacity='0' fill='#8A8AB2'/></svg>");
-    background-size: cover;
+    background: linear-gradient(110deg, #8A8AB2, #8A8AB2 59%, #7A7AA2 60%, #7A7AA2);
     color: white;
     transform: rotateY(20deg);
     transform-origin: left center;
 }
 .developer:hover {
-    box-shadow: .1em .1em .2em .2em lightsteelblue;
+    box-shadow: -.2em .2em .2em .2em rgba(0,0,0,.2);
+}
+.project:hover {
+    box-shadow:  .2em .2em .2em .2em rgba(0,0,0,.2);
 }
 
 .drop {
@@ -62,8 +63,4 @@ main {
 }
 button {
     font-size: 1em;
-}
-.foo {
-    background-color: #7A7AA2;
-    color: #88c6c2;
 }
