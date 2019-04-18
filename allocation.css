@@ -1,18 +1,20 @@
 body {
     margin: 2em;
     font-family: 'Helvetica Neue', Arial, sans-serif;
+    height: 100vh;
+    background-image: radial-gradient(farthest-corner at 66vw 12vh, white, lightblue 70%, #93bfcd);
 }
 
 main {
     display: grid;
     grid-template-columns: 1fr 1fr ;
-    grid-gap: 2em;
+    grid-gap: 1em;
     grid-template-areas:
         'begindate  enddate   '
         'developers projects   '
         'status     status    ';
 }
-#begindate {
+#4040begindate {
     grid-area: begindate;
 }
 #enddate {
@@ -20,32 +22,48 @@ main {
 }
 #projects {
     grid-area: projects;
+    perspective: 100vw;
 }
+
 #developers {
     grid-area: developers;
+    perspective: 100vw;
 }
 #status {
     grid-area: status;
 }
 .project, .developer {
     height: 5em;
-    width: 62%;
     border: 2px solid gray;
     border-radius: 0.5em;
     margin-top: 0.5em;
     padding: 1em;
 }
 .project {
-    background: lightblue;
-}
-.developer {
-    background-image: url("data:image/svg+xml;utf8,<svg width='100%' height='100%' version='1.1' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'><defs /><g id='layer1'><rect x='0' y='0' width='100' height='100' stroke-opacity='0' fill='#7A7AA2' /></g><g id='layer2'><path d='M0 0 L66 0 L33 100 L0 100 Z ' stroke-opacity='0' fill='#8A8AB2'/></g></svg>");
+    background-image: url("data:image/svg+xml;utf8,<svg width='100%' height='100%' version='1.1' viewBox='0 0 100 100' style='background-color:#76B2AE' xmlns='http://www.w3.org/2000/svg'><defs /><path d='M0 0 L70 0 L40 100 L0 100 Z ' stroke-opacity='0' fill='#739996'/></svg>");
     background-size: cover;
     color: white;
+    transform: rotateY(-20deg);
+    transform-origin: right center;
 }
+.developer {
+    background-image: url("data:image/svg+xml;utf8,<svg width='100%' height='100%' version='1.1' viewBox='0 0 100 100' style='background-color:#7A7AA2' xmlns='http://www.w3.org/2000/svg'><defs /><path d='M0 0 L40 0 L20 100 L0 100 Z ' stroke-opacity='0' fill='#8A8AB2'/></svg>");
+    background-size: cover;
+    color: white;
+    transform: rotateY(20deg);
+    transform-origin: left center;
+}
+.developer:hover {
+    box-shadow: .1em .1em .2em .2em lightsteelblue;
+}
+
 .drop {
     box-shadow: 0 0 0.5em 0.5em palegoldenrod;
 }
 button {
     font-size: 1em;
+}
+.foo {
+    background-color: #7A7AA2;
+    color: #88c6c2;
 }
