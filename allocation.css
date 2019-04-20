@@ -70,3 +70,28 @@ main {
 button {
     font-size: 1em;
 }
+
+.developer > button {
+    position: absolute;
+    top: 0.2em;
+    right: 0.2em;
+}
+.developer > div {
+    display: grid;
+    grid-column-gap: .5em;
+    grid-template-columns: max-content max-content;
+}
+.developer > div > label {
+    /*text-align: right;*/
+    grid-column: 1/2;
+}
+.developer > div > input {
+    background: transparent;
+    color: white;
+    font-size: 1.0em;
+    font-weight: bold;
+    border-width: 0 0 1px 0;
+    border-color: white;
+    outline: none;
+    grid-column: 2/3;
+}

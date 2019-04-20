@@ -1,4 +1,4 @@
-import {h, mini} from "./mini/mini.js";
+import {h, mini}          from "../mini/mini.js";
 import {view as dateView} from "./datePicker.js"
 
 const content = document.getElementById("content");
@@ -22,8 +22,8 @@ const drop = action => evt => {
 const initialState = {
     beginDate: new Date(),
     endDate:   new Date(),
-    developers: [ {id:nextDevId++} ],
-    projects:   [ {id:nextProId++} ],
+    developers: [ {id:nextDevId++, firstname: "George", lastname:"Clooney", workPCT: 100} ],
+    projects:   [ {id:nextProId++, name:"", needsFTE: 1 } ],
     status:     ""
 };
 
@@ -33,6 +33,15 @@ const actions = {
     removeDev: id  => state => { state.developers = state.developers.filter(dev => dev.id !== id)  },
     removePro: id  => state => { state.projects   = state.projects.  filter(pro => pro.id !== id)  },
     status:    msg => state => { state.status = msg },
+    setFirstname: devId => (state, event) => {
+        state.developers.find(it=> it.id === devId).firstname = event.target.value;
+    },
+    setLastname: devId => (state, event) => {
+        state.developers.find(it=> it.id === devId).lastname = event.target.value;
+    },
+    setWorkPCT: devId => (state, event) => {
+        state.developers.find(it=> it.id === devId).workPCT = event.target.value;
+    }
 };
 
 const view = (act, state) =>
@@ -49,7 +58,26 @@ const view = (act, state) =>
               dragstart: evt => evt.dataTransfer.setData("text", evt.target.id)
             }, [
                 h("button", { click: act(actions.removeDev(dev.id)) }, "-"),
-                " Developer " + dev.id
+                h("div", {}, [
+                    h("label", {for:`dev${dev.id}-fn`}, "First Name: "),
+                    h("input", {
+                        id: `dev${dev.id}-fn`,
+                        type: "text",
+                        value: dev.firstname,
+                        change: act(actions.setFirstname(dev.id))}),
+                    h("label", {for:`dev${dev.id}-ln`}, "Last Name: "),
+                    h("input", {
+                        id: `dev${dev.id}-ln`,
+                        type: "text",
+                        value: dev.lastname,
+                        change: act(actions.setLastname(dev.id))}),
+                    h("label", {for:`dev${dev.id}-cap`}, "Works %: "),
+                    h("input", {
+                        id: `dev${dev.id}-cap`,
+                        type: "number",
+                        value: dev.workPCT,
+                        change: act(actions.setWorkPCT(dev.id))}),
+                ])
             ]))
           ]
         ),

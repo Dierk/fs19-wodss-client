@@ -1,5 +1,5 @@
-import {h} from "./mini/mini.js";
-import "./util/times.js";
+import {h} from "../mini/mini.js";
+import          "../util/times.js";
 
 export { view }
 
@@ -19,15 +19,21 @@ const actions = {
 
 const view = (label, id) => (act, state) =>
     h("div", { id: id }, [
-        label + " Date: " + state[id].toLocaleDateString(),
+        h("span", {style:"padding-right: 1em"}, label ),
         h("select", {change: act( actions.setDay(id))   }, (31).times( day =>
-            h("option",  state[id].getUTCDate() === day+1 ? {selected:true} : {value: day+1}, (day+1).toString() )
+            h("option",  state[id].getUTCDate() === day+1
+                         ? {selected:true}
+                         : {value: day+1}, (day+1).toString() )
         ) ),
         h("select", {change: act( actions.setMonth(id)) }, (12).times( month =>
-            h("option", state[id].getUTCMonth() === month ? {selected:true} :{value: month}, (month+1).toString() )
+            h("option", state[id].getUTCMonth() === month
+                        ? {selected:true}
+                        :{value: month}, (month+1).toString() )
         ) ),
         h("select", {change: act( actions.setYear(id))  }, (10).times( year =>
-            h("option", state[id].getUTCFullYear() === year+2019 ? {selected:true} :{value: year+2019}, (year+2019).toString() )
+            h("option", state[id].getUTCFullYear() === year+2019
+                        ? {selected:true}
+                        : {value: year+2019}, (year+2019).toString() )
         ) ),
     ]);
 
