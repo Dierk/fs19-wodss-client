@@ -11,8 +11,7 @@ function h(name, attributes, node) {
         children:   children
     }
 }
-function mini(view, initialState, root) {
-    let state = initialState;
+function mini(view, state, root, onRefreshed) {
     let place = render(view(act, state));
     root.appendChild(place);
 
@@ -37,6 +36,7 @@ function mini(view, initialState, root) {
         const newView = render(view(act, state), root);
         root.replaceChild(newView, place);
         place = newView;
+        onRefreshed(state);
     }
     function act(action) { return (event) => { state = action(state, event) || state; refresh() } }
 }

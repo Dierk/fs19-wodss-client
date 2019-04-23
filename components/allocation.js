@@ -22,26 +22,54 @@ const drop = action => evt => {
 const initialState = {
     beginDate: new Date(),
     endDate:   new Date(),
-    developers: [ {id:nextDevId++, firstname: "George", lastname:"Clooney", workPCT: 100} ],
-    projects:   [ {id:nextProId++, name:"", needsFTE: 1 } ],
+    developers: [ {id:nextDevId++, firstname: "Claudia", lastname:"Muster", workPCT: 100} ],
+    projects:   [ {id:nextProId++, name:"Staffing", needsFTE: 3 , assigned: [] } ],
     status:     ""
 };
 
 const actions = {
-    addDev:           state => { state.developers.push( {id:nextDevId++}) },
-    addPro:           state => { state.projects.push(   {id:nextProId++}) },
-    removeDev: id  => state => { state.developers = state.developers.filter(dev => dev.id !== id)  },
-    removePro: id  => state => { state.projects   = state.projects.  filter(pro => pro.id !== id)  },
-    status:    msg => state => { state.status = msg },
-    setFirstname: devId => (state, event) => {
-        state.developers.find(it=> it.id === devId).firstname = event.target.value;
+    addDev:           state => { state.developers.push( {id:nextDevId++, firstname: "change", lastname:"change", workPCT: 100}) },
+    addPro:           state => { state.projects.push(   {id:nextProId++, name:"change", needsFTE: 1, assigned:[] }) },
+    removeDev: id  => state => {
+        const used = state.projects.some( proj => proj.assigned.some( assignment => assignment.devId === id));
+        if (used) {
+            state.status = "Cannot delete developer since there are still assignments."
+        } else {
+            state.developers = state.developers.filter(dev => dev.id !== id);
+        }
     },
-    setLastname: devId => (state, event) => {
-        state.developers.find(it=> it.id === devId).lastname = event.target.value;
+    removePro:    id   => state          => { state.projects = state.projects.filter(pro => pro.id !== id)  },
+    status:       msg  => state          => { state.status   = msg },
+    setFirstname: dev  => (state, event) => { dev.firstname  = event.target.value;},
+    setLastname:  dev  => (state, event) => { dev.lastname   = event.target.value;},
+    setWorkPCT:   dev  => (state, event) => { dev.workPCT    = Number(event.target.value);},
+    setName:      proj => (state, event) => { proj.name      = event.target.value;},
+    setNeedsFTE:  proj => (state, event) => { proj.needsFTE  = Number(event.target.value);},
+    setAssignedPCT: assignment => (state, event) => {assignment.assignedPCT = Number(event.target.value);},
+    assign: (devId, project) => _ => {
+        project.assigned.push( {devId:devId, assignedPCT:100} ); // todo: set workPCT - load
     },
-    setWorkPCT: devId => (state, event) => {
-        state.developers.find(it=> it.id === devId).workPCT = event.target.value;
+    deleteAssignment: (project, assignment) => _ => {
+      project.assigned = project.assigned.filter( it => it !== assignment)
     }
+};
+
+const getLoad = (devId, state) =>
+    state.projects.reduce( (sum,proj) =>
+       sum + proj.assigned
+               .filter(assignment => assignment.devId === devId)
+               .map(assignment => assignment.assignedPCT)
+               .reduce( (accu, cur)=> accu + cur, 0) ,0) ;
+
+const getDevById = (devId, state) => state.developers.find( dev => dev.id === devId );
+
+const getFTEs = project =>
+    project.assigned.reduce( (sum, assignment) => sum + assignment.assignedPCT / 100 ,0);
+
+const progressStyle = pct => {
+    const red   = "rgba(255,0,0, 0.7)";
+    const green = "rgba(115,153,150,0.7)";
+    return `background: linear-gradient(90deg, ${red}, ${red} ${pct}%, ${green} ${pct}%, ${green} );`
 };
 
 const view = (act, state) =>
@@ -53,31 +81,34 @@ const view = (act, state) =>
             h("button", { click: act(actions.addDev) }, "+"),
             ...state.developers.map( dev => h("div", {
               class:     "developer",
-              id:        dev.id,
+              id:        dev.id, // for DnD
               draggable: true,
               dragstart: evt => evt.dataTransfer.setData("text", evt.target.id)
             }, [
                 h("button", { click: act(actions.removeDev(dev.id)) }, "-"),
                 h("div", {}, [
-                    h("label", {for:`dev${dev.id}-fn`}, "First Name: "),
+                    h("label", {}, "First Name: "),
                     h("input", {
-                        id: `dev${dev.id}-fn`,
-                        type: "text",
-                        value: dev.firstname,
-                        change: act(actions.setFirstname(dev.id))}),
-                    h("label", {for:`dev${dev.id}-ln`}, "Last Name: "),
+                        type:   "text",
+                        value:  dev.firstname,
+                        change: act(actions.setFirstname(dev))}),
+                    h("label", {}, "Last Name: "),
                     h("input", {
-                        id: `dev${dev.id}-ln`,
-                        type: "text",
-                        value: dev.lastname,
-                        change: act(actions.setLastname(dev.id))}),
-                    h("label", {for:`dev${dev.id}-cap`}, "Works %: "),
+                        type:   "text",
+                        value:  dev.lastname,
+                        change: act(actions.setLastname(dev))}),
+                    h("label", {}, "Works %: "),
                     h("input", {
-                        id: `dev${dev.id}-cap`,
-                        type: "number",
-                        value: dev.workPCT,
-                        change: act(actions.setWorkPCT(dev.id))}),
-                ])
+                        type:   "text", maxlength:"3",
+                        value:  dev.workPCT,
+                        change: act(actions.setWorkPCT(dev))}),
+                    h("label", {}, "Load:"),
+                    h("div", {
+                        class: "load",
+                        style: progressStyle(getLoad(dev.id, state)),
+                    }, getLoad(dev.id, state) + " %")
+                ]),
+                h("img",{src:"/img/img"+ (dev.id % 8) + ".jpg"})
             ]))
           ]
         ),
@@ -87,14 +118,49 @@ const view = (act, state) =>
           ...state.projects.map( project => h("div", {
               class:     "project",
               id:        project.id,
-              drop:      drop( (from, to) =>
-                             act( actions.status(`dropped developer ${from} onto project ${to}`) ) ()
+              drop:      drop( (devId, to) => {
+                            if (null == devId || '' === devId) {
+                                act( actions.status(`Drag and drop did not work. Please try again.`) ) ();
+                                return;
+                            }
+                            act( actions.assign(Number(devId), project)) ();
+                            act( actions.status(`Assigned developer to project.`) ) ();
+                            }
                          ),
               dragover:  allowDrop,
               dragleave: evt => evt.target.classList.remove("drop")
             }, [
                 h("button", { click: act(actions.removePro(project.id)) }, "-"),
-                " Project " + project.id
+                h("input", {
+                    type: "text",
+                    value: project.name,
+                    change: act(actions.setName(project))}),
+                h("span", {}, "needs FTE"),
+                h("input", {
+                    type: "text", size:4,
+                    value: project.needsFTE,
+                    change: act(actions.setNeedsFTE(project))}),
+                h("span", {}, "has"),
+                h("div", {
+                    class: "load",
+                    style: progressStyle(getFTEs(project) * 100 / project.needsFTE ),
+                }, getFTEs(project) ),
+                h("div", { class: "assignments"},
+                    project.assigned.map( assignment =>
+                      h("div", {}, [
+                         h("button", {
+                             class: "delete",
+                             click: act(actions.deleteAssignment(project, assignment))
+                         }, "x"),
+                         h("input", {
+                             type: "text", size:3,
+                             value: assignment.assignedPCT,
+                             change: act(actions.setAssignedPCT(assignment))}),
+                         h("span", {}, "" + getDevById(assignment.devId, state).firstname ),
+                         h("span", {}, "" + getDevById(assignment.devId, state).lastname ),
+                      ])
+                    )
+                ),
             ]))
           ]
         ),
@@ -102,4 +168,4 @@ const view = (act, state) =>
         h("div",{id:"status"}, state.status),
     ]);
 
-mini(view, initialState, content);
+mini(view, initialState, content, state => state.status = "");

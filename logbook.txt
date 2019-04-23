@@ -1,4 +1,6 @@
 
+24.04.19 added assignments to the projects, add developer images, animate status monolog
+         mini now takes a onRefreshed function to clean data off the flash scope
 17.04.19 experiment with a 2.5D UI, glossy background, perspective and transform
 19.03.19 make sure the end date is never before beginDate.
 18.03.19 put datePicker "component" into it's own file, use dropdown as date picker

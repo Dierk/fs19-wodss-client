@@ -1,7 +1,7 @@
 body {
     margin: 2em;
     font-family: 'Helvetica Neue', Arial, sans-serif;
-    height: 100vh;
+    height: 150vh;
     background-image: radial-gradient(farthest-corner at 66vw 12vh, white, lightblue 70%, #93bfcd);
 }
 
@@ -33,11 +33,21 @@ main {
     grid-area: developers;
     perspective: 100vw;
 }
+@keyframes monolog {
+      0% { opacity: 0; transform: translateX(-20%)}
+     20% { opacity: 1; transform: translateX(0)}
+     80% { opacity: 1; transform: translateX(0)}
+    100% { opacity: 0; transform: translateX(20%)}
+}
 #status {
     grid-area: status;
+    animation: 3s ease-in-out 0s 1 monolog ;
+    opacity: 0;
+    text-align: center;
+    color: #7A7AA2;
 }
 .project, .developer {
-    height: 5em;
+    min-height: 5em;
     border: 2px solid gray;
     border-radius: 0.5em;
     margin-top: 0.5em;
@@ -67,14 +77,22 @@ main {
 .drop {
     box-shadow: 0 0 0.5em 0.5em palegoldenrod;
 }
+.drop * {  /* avoid nested elements of the drop target to receive drop events */
+    pointer-events: none;
+}
+
 button {
     font-size: 1em;
 }
 
-.developer > button {
+.developer > button, .project > button {
     position: absolute;
     top: 0.2em;
     right: 0.2em;
+    border-radius: 50%;
+    border: none;
+    color: white;
+    background-color: rgba(255,255,255,.3);
 }
 .developer > div {
     display: grid;
@@ -94,4 +112,46 @@ button {
     border-color: white;
     outline: none;
     grid-column: 2/3;
+}
+
+.developer img {
+    position: absolute;
+    top: .7em;
+    right: .7em;
+    width: 6em;
+    clip-path: circle(3em at 50% 40%);
+    -webkit-clip-path: circle(3em at 50% 40%);
+    mix-blend-mode: luminosity;
+}
+
+.project input {
+    background: transparent;
+    color: white;
+    font-size: 1.0em;
+    font-weight: bold;
+    border-width: 0 0 1px 0;
+    border-color: white;
+    outline: none;
+    margin-right: .5em;
+}
+.project span {
+    padding-right: .5em;
+}
+
+div.load {
+    color: white;
+    text-align: center;
+}
+
+.assignments {
+    display: grid;
+    grid-column-gap: .5em;
+    grid-template-columns: max-content max-content;
+}
+
+button.delete {
+    background-color: transparent;
+    border: none;
+    color: red;
+    font-size: 1.4em;
 }
