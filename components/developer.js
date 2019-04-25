@@ -11,7 +11,7 @@ const actions = {
     setLastname:  dev  => (state, event) => { dev.lastname   = event.target.value;},
     setWorkPCT:   dev  => (state, event) => { dev.workPCT    = Number(event.target.value);},
 
-    addDev:  act   => state => {
+    addDev: act => state => { // async actions need the act reference
         state.status = "...";
         const proxy = {id: -1, firstname:"", lastname:"", workPCT:0};
         state.developers.push(proxy);
