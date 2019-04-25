@@ -36,7 +36,7 @@ function mini(view, state, root, onRefreshed) {
         const newView = render(view(act, state), root);
         root.replaceChild(newView, place);
         place = newView;
-        onRefreshed(state);
+        state = onRefreshed(state) || state;
     }
     function act(action) { return (event) => { state = action(state, event) || state; refresh() } }
 }
