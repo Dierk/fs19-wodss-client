@@ -1,4 +1,5 @@
-
+25.04.19 refactoring into separate components for allocation, project, developer, assignment
+         cleaning the tests, making bundles.
 24.04.19 added assignments to the projects, add developer images, animate status monolog
          mini now takes a onRefreshed function to clean data off the flash scope
 17.04.19 experiment with a 2.5D UI, glossy background, perspective and transform

@@ -11,7 +11,7 @@ function h(name, attributes, node) {
         children:   children
     }
 }
-function mini(view, state, root, onRefreshed) {
+function mini(view, state, root, onRefreshed=(x=>x)) {
     let place = render(view(act, state));
     root.appendChild(place);
 
@@ -21,14 +21,11 @@ function mini(view, state, root, onRefreshed) {
             return document.createTextNode(node)
         }
         const element = document.createElement(node.name);
-        for (let key in node.attributes) {
-            const value = node.attributes[key];
-            if (typeof value === "function") {
-                element.addEventListener(key, value);
-            } else {
-                element.setAttribute(key, value);
-            }
-        }
+        Object.entries(node.attributes).forEach(([key, value]) =>
+            typeof value === "function"
+                ? element.addEventListener(key, value)
+                : element.setAttribute(key, value)
+        );
         node.children.forEach(child => element.appendChild(render(child)));
         return element;
     }
@@ -38,5 +35,8 @@ function mini(view, state, root, onRefreshed) {
         place = newView;
         state = onRefreshed(state) || state;
     }
-    function act(action) { return (event) => { state = action(state, event) || state; refresh() } }
+    function act(action) { return event => {
+        const t = action(state, event); state = t === undefined ? state : t;
+        refresh();
+    }   }
 }

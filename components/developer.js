@@ -73,5 +73,5 @@ const view = dev => (act, state) =>
                 style: progressStyle(getLoad(dev.id, state)),
             }, getLoad(dev.id, state) + " %")
         ]),
-        h("img",{src:"/img/img"+ ( dev.id === -1 ? "no" : dev.id % 8) + ".jpg"})
+        h("img",{src:"img/img"+ ( dev.id === -1 ? "no" : dev.id % 8) + ".jpg"})
     ]);

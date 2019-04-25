@@ -105,7 +105,6 @@ function Assert() {
     return {
         results: results,
         true: (testResult) => {
-            console.log(1);
             if (!testResult) { console.error("test failed"); }
             results.push(testResult);
         },
@@ -387,8 +386,7 @@ function h(name, attributes, node) {
         children:   children
     }
 }
-function mini(view, initialState, root) {
-    let state = initialState;
+function mini(view, state, root, onRefreshed=(x=>x)) {
     let place = render(view(act, state));
     root.appendChild(place);
 
@@ -398,14 +396,11 @@ function mini(view, initialState, root) {
             return document.createTextNode(node)
         }
         const element = document.createElement(node.name);
-        for (let key in node.attributes) {
-            const value = node.attributes[key];
-            if (typeof value === "function") {
-                element.addEventListener(key, value);
-            } else {
-                element.setAttribute(key, value);
-            }
-        }
+        Object.entries(node.attributes).forEach(([key, value]) =>
+            typeof value === "function"
+                ? element.addEventListener(key, value)
+                : element.setAttribute(key, value)
+        );
         node.children.forEach(child => element.appendChild(render(child)));
         return element;
     }
@@ -413,24 +408,23 @@ function mini(view, initialState, root) {
         const newView = render(view(act, state), root);
         root.replaceChild(newView, place);
         place = newView;
+        state = onRefreshed(state) || state;
     }
-    function act(action) { return () => { state = action(state); refresh(); } }
+    function act(action) { return event => {
+        const t = action(state, event); state = t === undefined ? state : t;
+        refresh();
+    }   }
 }
 
 const miniSuite = Suite("mini");
 
 miniSuite.add("counter", assert => {
-    // setup
-    const miniContainer = document.createElement("div");
     const miniRoot = document.createElement("div");
-    miniContainer.appendChild(miniRoot);
-    document.getElementsByTagName("body")[0].appendChild(miniContainer);
 
     const actions = {
         dec : state => state - 1,
         inc : state => state + 1
     };
-
 
     const view = (act, state) =>
         h("div", {id: "holder"}, [
@@ -446,30 +440,152 @@ miniSuite.add("counter", assert => {
 
     // stimuli and assertions
 
-    assert.is(5 + 0, document.getElementById("holder").childElementCount);
+    assert.is(miniRoot.querySelectorAll("#holder *").length, 5);
 
-    document.getElementById("plus").click();
+    miniRoot.querySelector("#plus").click();
 
-    assert.is(5 + 1, document.getElementById("holder").childElementCount);
+    assert.is(miniRoot.querySelectorAll("#holder *").length, 6);
 
-    document.getElementById("minus").click();
+    miniRoot.querySelector("#minus").click();
 
-    assert.is(5 + 0, document.getElementById("holder").childElementCount);
+    assert.is(miniRoot.querySelectorAll("#holder *").length, 5);
 
-    document.getElementById("minus").click();
+    miniRoot.querySelector("#minus").click();
 
-    assert.is("negative not supported", document.getElementById("holder").childNodes[4].textContent);
+    assert.is(miniRoot.querySelector("p").textContent, "negative not supported");
 
-    document.getElementById("reset").click();
+    miniRoot.querySelector("#reset").click();
 
-    assert.is(5 + 0, document.getElementById("holder").childElementCount);
+    assert.is(miniRoot.querySelectorAll("#holder *").length, 5);
 
-    // cleanup
-
-    document.getElementsByTagName("body")[0].removeChild(miniContainer);
 });
 
 
 miniSuite.run();
+
+const progressStyle = pct => {
+    const red   = "rgba(255,0,0, 0.7)";
+    const green = "rgba(115,153,150,0.7)";
+    return `background: linear-gradient(90deg, ${red}, ${red} ${pct}%, ${green} ${pct}%, ${green} );`
+};
+
+/**
+ * @module developerService, LCRUD services for developers, like all modules this service is a singleton
+ */
+
+let _nextDeveloperId = 0;
+
+const nextDeveloperId = () => _nextDeveloperId++;
+
+// we mimic to get the dev id asynchronously from the backend
+
+const create = ({firstname="change", lastname="change", workPCT=100}) =>
+    new Promise( (resolve, reject) =>
+        // _nextDeveloperId > 0 ? reject("REMOTE ERROR") : // enable to show error handling
+        setTimeout( () => resolve(nextDeveloperId()), 1000) // mimic delay from server call
+    ).then( id =>
+        ({id:id, firstname: firstname, lastname:lastname, workPCT: workPCT})
+    );
+
+const actions = {
+    setFirstname: dev  => (state, event) => { dev.firstname  = event.target.value;},
+    setLastname:  dev  => (state, event) => { dev.lastname   = event.target.value;},
+    setWorkPCT:   dev  => (state, event) => { dev.workPCT    = Number(event.target.value);},
+
+    addDev: act => state => { // async actions need the act reference
+        state.status = "...";
+        const proxy = {id: -1, firstname:"", lastname:"", workPCT:0};
+        state.developers.push(proxy);
+        create({})
+            .then ( dev => {
+                Object.getOwnPropertyNames(dev).forEach( name => proxy[name] = dev[name]);
+                state.status = "new developer with id "+dev.id+" added";
+                act(id)();
+            }).catch( err => {
+                state.status = "error trying to create new developer: "+err;
+                act(actions.removeDev(-1))(); // if there could be more than one, we need the webpr scheduler
+            });
+    },
+    removeDev: id$$1  => state => {
+        const used = state.projects.some( proj => proj.assigned.some( assignment => assignment.devId === id$$1));
+        if (used) {
+            state.status = "Cannot delete developer since there are still assignments.";
+        } else {
+            state.developers = state.developers.filter(dev => dev.id !== id$$1);
+        }
+    },
+};
+
+const getLoad = (devId, state) =>
+    state.projects.reduce( (sum,proj) =>
+       sum + proj.assigned
+               .filter(assignment => assignment.devId === devId)
+               .map(assignment => assignment.assignedPCT)
+               .reduce( (accu, cur)=> accu + cur, 0) ,0) ;
+
+const view = dev => (act, state) =>
+    h("div", {
+      class:     "developer"+(dev.id === -1 ? " loading" : ""),
+      id:        dev.id, // for DnD
+      draggable: true,
+      dragstart: evt => evt.dataTransfer.setData("text", evt.target.id)
+    }, [
+        h("button", { click: act(actions.removeDev(dev.id)) }, "-"),
+        h("div", {}, [
+            h("label", {}, "First Name: "),
+            h("input", {
+                type:   "text",
+                value:  dev.firstname,
+                change: act(actions.setFirstname(dev))}),
+            h("label", {}, "Last Name: "),
+            h("input", {
+                type:   "text",
+                value:  dev.lastname,
+                change: act(actions.setLastname(dev))}),
+            h("label", {}, "Works %: "),
+            h("input", {
+                type:   "text", maxlength:"3",
+                value:  dev.workPCT,
+                change: act(actions.setWorkPCT(dev))}),
+            h("label", {}, "Load:"),
+            h("div", {
+                class: "load",
+                style: progressStyle(getLoad(dev.id, state)),
+            }, getLoad(dev.id, state) + " %")
+        ]),
+        h("img",{src:"/img/img"+ ( dev.id === -1 ? "no" : dev.id % 8) + ".jpg"})
+    ]);
+
+const developerSuite = Suite("developer");
+
+developerSuite.add("one dev", assert => {
+
+        const oneDev = {id:0, firstname:"f", lastname:"l", workPCT:50};
+        const state = {developers: [ oneDev ], projects:   [ ], status: ""};
+        const mockAct = foo => foo;
+
+        const div = view(oneDev)(mockAct,state);
+
+        // unit test against the vdom
+
+        assert.is(div.name, "div");
+        assert.is(div.attributes.class, "developer");
+        assert.is(div.attributes.id, 0);
+        assert.is(div.children.length, 3); // button, form div, image
+        assert.is(div.children[1].name, "div");
+        assert.is(div.children[1].children.length, 8); // label, content for fn, ln, pct, load
+
+        // integration test against dom
+
+        const dom = document.createElement("div");
+
+        mini(view(oneDev), state, dom);
+
+        assert.is(dom.querySelectorAll(".developer").length, 1);
+        assert.is(dom.querySelectorAll("label").length, 4);
+    }
+);
+
+developerSuite.run();
 
 // importing all tests that make up the suite of tests that are build on the ES6 module system

@@ -1,6 +1,7 @@
 # fs19-wodss-client
 
-[Project allocation](https://dierk.github.io/fs19-wodss-client/ProjectAllocation.html)
+[Project allocation async](https://dierk.github.io/fs19-wodss-client/ProjectAllocation.html)\
+[Project allocation bundle](https://dierk.github.io/fs19-wodss-client/ProjectAllocationBundle.html)
 
 
 [AllTests from bundle](https://dierk.github.io/fs19-wodss-client/allTests.html)\
@@ -16,3 +17,4 @@ When checking out and running the code locally, you either
   - install a recent node.js and npm
   - install rollup with  `sudo npm install --global rollup`
   - run via `rollup -o allTestsSuiteBundle.js -f es -w . allTestsSuite.js` 
+  - create the application bundle via `rollup -o allocationBundle.js -f es components/allocation.js`

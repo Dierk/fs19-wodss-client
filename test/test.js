@@ -12,7 +12,6 @@ function Assert() {
     return {
         results: results,
         true: (testResult) => {
-            console.log(1);
             if (!testResult) { console.error("test failed") }
             results.push(testResult);
         },

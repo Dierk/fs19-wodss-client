@@ -5,17 +5,12 @@ import                           "../util/times.js"
 const miniSuite = Suite("mini");
 
 miniSuite.add("counter", assert => {
-    // setup
-    const miniContainer = document.createElement("div");
     const miniRoot = document.createElement("div");
-    miniContainer.appendChild(miniRoot);
-    document.getElementsByTagName("body")[0].appendChild(miniContainer);
 
     const actions = {
         dec : state => state - 1,
         inc : state => state + 1
     };
-
 
     const view = (act, state) =>
         h("div", {id: "holder"}, [
@@ -31,27 +26,24 @@ miniSuite.add("counter", assert => {
 
     // stimuli and assertions
 
-    assert.is(5 + 0, document.getElementById("holder").childElementCount);
+    assert.is(miniRoot.querySelectorAll("#holder *").length, 5);
 
-    document.getElementById("plus").click();
+    miniRoot.querySelector("#plus").click();
 
-    assert.is(5 + 1, document.getElementById("holder").childElementCount);
+    assert.is(miniRoot.querySelectorAll("#holder *").length, 6);
 
-    document.getElementById("minus").click();
+    miniRoot.querySelector("#minus").click();
 
-    assert.is(5 + 0, document.getElementById("holder").childElementCount);
+    assert.is(miniRoot.querySelectorAll("#holder *").length, 5);
 
-    document.getElementById("minus").click();
+    miniRoot.querySelector("#minus").click();
 
-    assert.is("negative not supported", document.getElementById("holder").childNodes[4].textContent);
+    assert.is(miniRoot.querySelector("p").textContent, "negative not supported");
 
-    document.getElementById("reset").click();
+    miniRoot.querySelector("#reset").click();
 
-    assert.is(5 + 0, document.getElementById("holder").childElementCount);
+    assert.is(miniRoot.querySelectorAll("#holder *").length, 5);
 
-    // cleanup
-
-    document.getElementsByTagName("body")[0].removeChild(miniContainer);
 });
 
 
