@@ -130,6 +130,10 @@ button {
     mix-blend-mode: normal;
 }
 
+.loading {
+    opacity: 0.5;
+}
+
 .project input {
     background: transparent;
     color: white;
