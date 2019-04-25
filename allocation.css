@@ -94,6 +94,9 @@ button {
     color: white;
     background-color: rgba(255,255,255,.3);
 }
+.developer > button:hover, .project > button:hover {
+    border: 1px solid white;
+}
 .developer > div {
     display: grid;
     grid-column-gap: .5em;
@@ -122,6 +125,9 @@ button {
     clip-path: circle(3em at 50% 40%);
     -webkit-clip-path: circle(3em at 50% 40%);
     mix-blend-mode: luminosity;
+}
+.developer:hover img {
+    mix-blend-mode: normal;
 }
 
 .project input {
