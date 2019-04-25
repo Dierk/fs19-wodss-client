@@ -5,7 +5,6 @@ import {create}                 from "../services/developerService.js";
 
 export {view , addDev}
 
-
 const actions = {
     setFirstname: dev  => (state, event) => { dev.firstname  = event.target.value;},
     setLastname:  dev  => (state, event) => { dev.lastname   = event.target.value;},
@@ -76,4 +75,3 @@ const view = dev => (act, state) =>
         ]),
         h("img",{src:"/img/img"+ ( dev.id === -1 ? "no" : dev.id % 8) + ".jpg"})
     ]);
-
