@@ -1,3 +1,4 @@
+import {selectorFor} from "../components/helper.js";
 export { h, mini }
 
 function h(name, attributes, node) {
@@ -16,20 +17,19 @@ function mini(view, state, root, onRefreshed=(x=>x)) {
     root.appendChild(place);
 
     function render(node) {
-        if (typeof node === "string" ||
-            typeof node === "number") {
+        if (typeof node === "string" || typeof node === "number") {
             return document.createTextNode(node)
         }
         const element = document.createElement(node.name);
         Object.entries(node.attributes).forEach(([key, value]) =>
-            typeof value === "function"
-                ? element.addEventListener(key, value)
-                : element.setAttribute(key, value)
+            typeof value === "function" ? element.addEventListener(key, value) : element.setAttribute(key, value)
         );
         node.children.forEach(child => element.appendChild(render(child)));
         return element;
     }
     function refresh() {
+        const focusElement = document.querySelector(":focus");
+        if (focusElement) {state.focussed = selectorFor(focusElement);}
         const newView = render(view(act, state), root);
         root.replaceChild(newView, place);
         place = newView;
