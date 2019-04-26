@@ -134,6 +134,10 @@ button {
     opacity: 0.5;
 }
 
+.developer > div > input:focus, .project > input:focus {
+    border-color: yellow;
+}
+
 .project input {
     background: transparent;
     color: white;
