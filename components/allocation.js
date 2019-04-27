@@ -42,10 +42,4 @@ const view = (act, state) =>
         h("div",{id:"status"}, state.status),
     ]);
 
-mini(view, state, content, state => {
-    state.status = "";
-    if (state.focussed) {
-        const toFocus = document.querySelector(state.focussed);
-        if (toFocus) toFocus.focus();
-    }
-});
+mini(view, state, content, state => {state.status = "";} );

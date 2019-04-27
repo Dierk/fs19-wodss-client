@@ -28,11 +28,11 @@ function mini(view, state, root, onRefreshed=(x=>x)) {
         return element;
     }
     function refresh() {
-        const focusElement = document.querySelector(":focus");
-        if (focusElement) {state.focussed = selectorFor(focusElement);}
+        let el = null; const focusSelector = (el = document.querySelector(":focus")) && selectorFor(el);
         const newView = render(view(act, state), root);
         root.replaceChild(newView, place);
         place = newView;
+        focusSelector && (el = document.querySelector(focusSelector)) && el.focus();
         state = onRefreshed(state) || state;
     }
     function act(action) { return event => {
