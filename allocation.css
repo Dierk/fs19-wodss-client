@@ -169,3 +169,7 @@ button.delete {
     color: red;
     font-size: 1.4em;
 }
+
+.attention {
+    border-color: orange;
+}
