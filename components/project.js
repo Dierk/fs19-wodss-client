@@ -24,10 +24,9 @@ const onDrop = (project, act) => drop( (devId, to) =>
     : act(assign(Number(devId), project)) ()
 );
 
-
 const view = project => (act, state) =>
     h("div", {
-      class:     "project",
+      class:     "project" + (project.needsFTE > getFTEs(project) ? " attention" : ""),
       id:        project.id,
       drop:      onDrop(project, act), // asynchronous
       dragover:  allowDrop,
