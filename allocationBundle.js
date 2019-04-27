@@ -1,3 +1,49 @@
+const progressStyle = (pct, redOnGreen) => {
+    const red   = "rgba(255,0,0, 0.7)";
+    const green = "rgba(115,153,150,0.7)";
+    return redOnGreen
+        ? `background: linear-gradient(90deg, ${red}, ${red} ${pct}%, ${green} ${pct}%, ${green} );`
+        : `background: linear-gradient(90deg, ${green}, ${green} ${pct}%, ${red} ${pct}%, ${red} );`;
+};
+
+function allowDrop(evt) {
+    evt.target.classList.add("drop");
+    evt.preventDefault(); // default is not to allow drags.
+}
+
+const drop = action => evt => {
+    evt.preventDefault();
+    var data = evt.dataTransfer.getData("text");
+    evt.target.classList.remove("drop");
+    action(data, evt.target.id);
+};
+
+// adapted from
+// https://stackoverflow.com/questions/4588119/get-elements-css-selector-when-it-doesnt-have-an-id
+function selectorFor(element) {
+    const names = [];
+    while (element.parentNode) {
+        if (element.id && isNaN(element.id)) { // numbers can be used in ids but they do not work in selectors
+            names.unshift('#' + element.id);
+            break;
+        } else {
+            if (element === element.ownerDocument.documentElement) {
+                names.unshift(element.tagName);
+            } else {
+                let count = 1;
+                let e = element;
+                while (e.previousElementSibling) {
+                    e = e.previousElementSibling;
+                    count++;
+                }
+                names.unshift(element.tagName + ":nth-child(" + count + ")");
+            }
+            element = element.parentNode;
+        }
+    }
+    return names.join(" > ");
+}
+
 function h(name, attributes, node) {
     const children =
         node instanceof Array
@@ -14,20 +60,19 @@ function mini(view, state, root, onRefreshed=(x=>x)) {
     root.appendChild(place);
 
     function render(node) {
-        if (typeof node === "string" ||
-            typeof node === "number") {
+        if (typeof node === "string" || typeof node === "number") {
             return document.createTextNode(node)
         }
         const element = document.createElement(node.name);
         Object.entries(node.attributes).forEach(([key, value]) =>
-            typeof value === "function"
-                ? element.addEventListener(key, value)
-                : element.setAttribute(key, value)
+            typeof value === "function" ? element.addEventListener(key, value) : element.setAttribute(key, value)
         );
         node.children.forEach(child => element.appendChild(render(child)));
         return element;
     }
     function refresh() {
+        const focusElement = document.querySelector(":focus");
+        if (focusElement) {state.focussed = selectorFor(focusElement);}
         const newView = render(view(act, state), root);
         root.replaceChild(newView, place);
         place = newView;
@@ -89,26 +134,6 @@ const view = (label, id) => (act, state) =>
                         : {value: year+2019}, (year+2019).toString() )
         ) ),
     ]);
-
-const progressStyle = (pct, redOnGreen) => {
-    const red   = "rgba(255,0,0, 0.7)";
-    const green = "rgba(115,153,150,0.7)";
-    return redOnGreen
-        ? `background: linear-gradient(90deg, ${red}, ${red} ${pct}%, ${green} ${pct}%, ${green} );`
-        : `background: linear-gradient(90deg, ${green}, ${green} ${pct}%, ${red} ${pct}%, ${red} );`;
-};
-
-function allowDrop(evt) {
-    evt.target.classList.add("drop");
-    evt.preventDefault(); // default is not to allow drags.
-}
-
-const drop = action => evt => {
-    evt.preventDefault();
-    var data = evt.dataTransfer.getData("text");
-    evt.target.classList.remove("drop");
-    action(data, evt.target.id);
-};
 
 // church encoding of the lambda calculus in JavaScript
 
@@ -334,7 +359,8 @@ const state = {
     endDate:    new Date(),
     developers: [ ],
     projects:   [ ],
-    status:     ""
+    status:     "",
+    focussed:   null, // keeping track of the focussed element, if any, as a css selector
 };
 
 const view$4 = (act, state) =>
@@ -357,4 +383,10 @@ const view$4 = (act, state) =>
         h("div",{id:"status"}, state.status),
     ]);
 
-mini(view$4, state, content, state => state.status = "");
+mini(view$4, state, content, state => {
+    state.status = "";
+    if (state.focussed) {
+        const toFocus = document.querySelector(state.focussed);
+        if (toFocus) toFocus.focus();
+    }
+});
