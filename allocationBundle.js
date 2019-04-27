@@ -90,10 +90,12 @@ const view = (label, id) => (act, state) =>
         ) ),
     ]);
 
-const progressStyle = pct => {
+const progressStyle = (pct, redOnGreen) => {
     const red   = "rgba(255,0,0, 0.7)";
     const green = "rgba(115,153,150,0.7)";
-    return `background: linear-gradient(90deg, ${red}, ${red} ${pct}%, ${green} ${pct}%, ${green} );`
+    return redOnGreen
+        ? `background: linear-gradient(90deg, ${red}, ${red} ${pct}%, ${green} ${pct}%, ${green} );`
+        : `background: linear-gradient(90deg, ${green}, ${green} ${pct}%, ${red} ${pct}%, ${red} );`;
 };
 
 function allowDrop(evt) {
@@ -228,7 +230,7 @@ const view$1 = dev => (act, state) =>
             h("label", {}, "Load:"),
             h("div", {
                 class: "load",
-                style: progressStyle(getLoad(dev.id, state)),
+                style: progressStyle( getLoad(dev.id, state) * 100 / dev.workPCT , true),
             }, getLoad(dev.id, state) + " %")
         ]),
         h("img",{src:"img/img"+ ( dev.id === -1 ? "no" : dev.id % 8) + ".jpg"})
@@ -248,7 +250,7 @@ const actions$2 = {
     setAssignedPCT: assignment => (state, event) => {assignment.assignedPCT = Number(event.target.value);},
 
     assign: (devId, project) => state => {
-        project.assigned.push( {devId:devId, assignedPCT:100} );
+        project.assigned.push( {devId:devId, assignedPCT: getDevById(devId, state).workPCT} );
         state.status = 'Assigned developer to project.';
     },
     deleteAssignment: (project, assignment) => _ => {
@@ -289,13 +291,13 @@ const getFTEs = project =>
 
 const onDrop = (project, act) => drop( (devId, to) =>
     (null == devId || '' === devId)
-    ? act(state => state.status(`Drag and drop did not work. Please try again.`) ) ()
+    ? act(state => {state.status = `Drag and drop did not work. Do not drag the image. Please try again.`;}) ()
     : act(assign(Number(devId), project)) ()
 );
 
 const view$3 = project => (act, state) =>
     h("div", {
-      class:     "project" + (project.needsFTE > getFTEs(project) ? " attention" : ""),
+      class:     "project" + (project.needsFTE < getFTEs(project) ? " attention" : ""),
       id:        project.id,
       drop:      onDrop(project, act), // asynchronous
       dragover:  allowDrop,
@@ -304,18 +306,18 @@ const view$3 = project => (act, state) =>
         h("button", { click: act(actions$3.removePro(project.id)) }, "-"),
         h("input", {
             type: "text",
-            value: project.name,
+            value: project.name, size:12,
             change: act(actions$3.setName(project))}),
-        h("span", {}, "needs FTE"),
+        h("span", {}, "needs"),
         h("input", {
             type: "text", size:4,
             value: project.needsFTE,
             change: act(actions$3.setNeedsFTE(project))}),
-        h("span", {}, "has"),
+        h("span", {}, "FTE, has "+ getFTEs(project) + " FTE assigned. Open:"),
         h("div", {
             class: "load",
-            style: progressStyle(getFTEs(project) * 100 / project.needsFTE ),
-        }, getFTEs(project) ),
+            style: progressStyle(getFTEs(project) * 100 / project.needsFTE, false ),
+        }, project.needsFTE - getFTEs(project) ),
         h("div", { class: "assignments"},
             project.assigned.map( assignment => view$2(project, assignment)(act, state) )
         ),
