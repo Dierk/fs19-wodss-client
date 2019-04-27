@@ -463,10 +463,12 @@ miniSuite.add("counter", assert => {
 
 miniSuite.run();
 
-const progressStyle = pct => {
+const progressStyle = (pct, redOnGreen) => {
     const red   = "rgba(255,0,0, 0.7)";
     const green = "rgba(115,153,150,0.7)";
-    return `background: linear-gradient(90deg, ${red}, ${red} ${pct}%, ${green} ${pct}%, ${green} );`
+    return redOnGreen
+        ? `background: linear-gradient(90deg, ${red}, ${red} ${pct}%, ${green} ${pct}%, ${green} );`
+        : `background: linear-gradient(90deg, ${green}, ${green} ${pct}%, ${red} ${pct}%, ${red} );`;
 };
 
 /**
@@ -552,7 +554,7 @@ const view = dev => (act, state) =>
             h("label", {}, "Load:"),
             h("div", {
                 class: "load",
-                style: progressStyle(getLoad(dev.id, state)),
+                style: progressStyle( getLoad(dev.id, state) * 100 / dev.workPCT , true),
             }, getLoad(dev.id, state) + " %")
         ]),
         h("img",{src:"img/img"+ ( dev.id === -1 ? "no" : dev.id % 8) + ".jpg"})
