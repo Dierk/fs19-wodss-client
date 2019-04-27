@@ -26,7 +26,7 @@ const onDrop = (project, act) => drop( (devId, to) =>
 
 const view = project => (act, state) =>
     h("div", {
-      class:     "project" + (project.needsFTE > getFTEs(project) ? " attention" : ""),
+      class:     "project" + (project.needsFTE < getFTEs(project) ? " attention" : ""),
       id:        project.id,
       drop:      onDrop(project, act), // asynchronous
       dragover:  allowDrop,
@@ -45,7 +45,7 @@ const view = project => (act, state) =>
         h("span", {}, "has"),
         h("div", {
             class: "load",
-            style: progressStyle(getFTEs(project) * 100 / project.needsFTE ),
+            style: progressStyle(getFTEs(project) * 100 / project.needsFTE, false ),
         }, getFTEs(project) ),
         h("div", { class: "assignments"},
             project.assigned.map( assignment => assignView(project, assignment)(act, state) )
