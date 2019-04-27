@@ -1,5 +1,10 @@
+27.04.19 streamlined the UI to make the important information better stand out
+         (over- /undercommitment, -staffing)
 25.04.19 refactoring into separate components for allocation, project, developer, assignment
          cleaning the tests, making bundles.
+         Make a focus_handling branch that restores the focus after the view has been refreshed.
+         Strategy is to find the absolute css selector for the currently focused element, save it in the state,
+         and set the focus after refresh accordingly.
 24.04.19 added assignments to the projects, add developer images, animate status monolog
          mini now takes a onRefreshed function to clean data off the flash scope
 17.04.19 experiment with a 2.5D UI, glossy background, perspective and transform
