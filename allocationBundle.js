@@ -199,9 +199,11 @@ const getLoad = (devId, state) =>
                .map(assignment => assignment.assignedPCT)
                .reduce( (accu, cur)=> accu + cur, 0) ,0) ;
 
+const overcommitted = (developer, state) => developer.workPCT < getLoad(developer.id, state);
+
 const view$1 = dev => (act, state) =>
     h("div", {
-      class:     "developer"+(dev.id === -1 ? " loading" : ""),
+      class:     "developer"+(dev.id === -1 ? " loading" : "") + (overcommitted(dev,state) ? " attention" : ""),
       id:        dev.id, // for DnD
       draggable: true,
       dragstart: evt => evt.dataTransfer.setData("text", evt.target.id)
@@ -291,10 +293,9 @@ const onDrop = (project, act) => drop( (devId, to) =>
     : act(assign(Number(devId), project)) ()
 );
 
-
 const view$3 = project => (act, state) =>
     h("div", {
-      class:     "project",
+      class:     "project" + (project.needsFTE > getFTEs(project) ? " attention" : ""),
       id:        project.id,
       drop:      onDrop(project, act), // asynchronous
       dragover:  allowDrop,
