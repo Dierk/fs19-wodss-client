@@ -35,18 +35,18 @@ const view = project => (act, state) =>
         h("button", { click: act(actions.removePro(project.id)) }, "-"),
         h("input", {
             type: "text",
-            value: project.name,
+            value: project.name, size:12,
             change: act(actions.setName(project))}),
-        h("span", {}, "needs FTE"),
+        h("span", {}, "needs"),
         h("input", {
             type: "text", size:4,
             value: project.needsFTE,
             change: act(actions.setNeedsFTE(project))}),
-        h("span", {}, "has"),
+        h("span", {}, "FTE, has "+ getFTEs(project) + " FTE assigned. Open:"),
         h("div", {
             class: "load",
             style: progressStyle(getFTEs(project) * 100 / project.needsFTE, false ),
-        }, getFTEs(project) ),
+        }, project.needsFTE - getFTEs(project) ),
         h("div", { class: "assignments"},
             project.assigned.map( assignment => assignView(project, assignment)(act, state) )
         ),
