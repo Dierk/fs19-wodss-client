@@ -20,7 +20,7 @@ const getFTEs = project =>
 
 const onDrop = (project, act) => drop( (devId, to) =>
     (null == devId || '' === devId)
-    ? act(state => state.status(`Drag and drop did not work. Please try again.`) ) ()
+    ? act(state => {state.status = `Drag and drop did not work. Do not drag the image. Please try again.`}) ()
     : act(assign(Number(devId), project)) ()
 );
 
