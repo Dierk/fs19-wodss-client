@@ -72,7 +72,7 @@ const view = dev => (act, state) =>
             h("label", {}, "Load:"),
             h("div", {
                 class: "load",
-                style: progressStyle(getLoad(dev.id, state), true),
+                style: progressStyle( getLoad(dev.id, state) * 100 / dev.workPCT , true),
             }, getLoad(dev.id, state) + " %")
         ]),
         h("img",{src:"img/img"+ ( dev.id === -1 ? "no" : dev.id % 8) + ".jpg"})

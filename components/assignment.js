@@ -6,7 +6,7 @@ const actions = {
     setAssignedPCT: assignment => (state, event) => {assignment.assignedPCT = Number(event.target.value);},
 
     assign: (devId, project) => state => {
-        project.assigned.push( {devId:devId, assignedPCT:100} );
+        project.assigned.push( {devId:devId, assignedPCT: getDevById(devId, state).workPCT} );
         state.status = 'Assigned developer to project.'
     },
     deleteAssignment: (project, assignment) => _ => {
