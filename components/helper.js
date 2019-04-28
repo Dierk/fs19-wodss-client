@@ -1,5 +1,5 @@
 
-export {progressStyle, allowDrop, drop, selectorFor, nullSafe}
+export {progressStyle, allowDrop, drop, selectorFor, NullSafe}
 
 const progressStyle = (pct, redOnGreen) => {
     const red   = "rgba(255,0,0, 0.7)";
@@ -21,33 +21,15 @@ const drop = action => evt => {
     action(data, evt.target.id);
 };
 
-
 const isNull = it => null === it || undefined === it;
 
-const nullSafe = fn => x =>
-    isNull(x)
-    ? x
-    : fn(x)
-;
-
-/**
- * Two functions _may_ be composed if the argument and passed-on value are not null or undefined.
- * Same purpose as binding the Maybe monad or Groovy's ?: elvis operator.
- * @param fn the function to compose
- * @returns {Function} the maybe composed function
- */
-Function.prototype.may = function(fn) {
-    const delegate = this;
-    return function (x) {
-        if (isNull(x)) {
-            return x;
-        } else {
-            const result = delegate(x);
-            return isNull(result) ? result : fn(result);
-        }
+const NullSafe = x => {
+    const maywrap = y => !isNull(y) && y.then ? y : NullSafe(y) ;
+    return {
+       then:  fn => maywrap( isNull(x) ? x : fn(x) ),
+       value: () => x,
     }
 };
-
 
 // adapted from
 // https://stackoverflow.com/questions/4588119/get-elements-css-selector-when-it-doesnt-have-an-id

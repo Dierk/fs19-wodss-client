@@ -1,4 +1,4 @@
-import {selectorFor, nullSafe} from "../components/helper.js";
+import {selectorFor, NullSafe} from "../components/helper.js";
 export { h, mini }
 
 function h(name, attributes, node) {
@@ -28,15 +28,15 @@ function mini(view, state, root, onRefreshed=(x=>x)) {
         return element;
     }
     function refresh() {
-        const focusSelector = ( sel => document.querySelector(sel)).may(selectorFor) (":focus");
+        const focusSelector = NullSafe(":focus").then( sel => document.querySelector(sel)).then(selectorFor).value();
         const newView = render(view(act, state));
         root.replaceChild(newView, place);
         place = newView;
-        ( sel => document.querySelector(sel) ).may( el => el.focus()) (focusSelector);
-        nullSafe (newState => state = newState) (onRefreshed(state))
+        NullSafe(focusSelector).then( sel => document.querySelector(sel) ).then( el => el.focus());
+        NullSafe(onRefreshed(state)).then(newState => state = newState);
     }
     function act(action) { return event => {
-        nullSafe ( newState => state = newState) (action(state, event));
+        NullSafe(action(state, event)).then( newState => state = newState) ;
         refresh();
     }   }
 }
