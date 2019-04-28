@@ -1,4 +1,4 @@
-import {selectorFor} from "../components/helper.js";
+import {selectorFor, nullSafe} from "../components/helper.js";
 export { h, mini }
 
 function h(name, attributes, node) {
@@ -28,15 +28,15 @@ function mini(view, state, root, onRefreshed=(x=>x)) {
         return element;
     }
     function refresh() {
-        let el = null; const focusSelector = (el = document.querySelector(":focus")) && selectorFor(el);
-        const newView = render(view(act, state), root);
+        const focusSelector = ( sel => document.querySelector(sel)).may(selectorFor) (":focus");
+        const newView = render(view(act, state));
         root.replaceChild(newView, place);
         place = newView;
-        focusSelector && (el = document.querySelector(focusSelector)) && el.focus();
-        state = onRefreshed(state) || state;
+        ( sel => document.querySelector(sel) ).may( el => el.focus()) (focusSelector);
+        nullSafe (newState => state = newState) (onRefreshed(state))
     }
     function act(action) { return event => {
-        const t = action(state, event); state = t === undefined ? state : t;
+        nullSafe ( newState => state = newState) (action(state, event));
         refresh();
     }   }
 }
