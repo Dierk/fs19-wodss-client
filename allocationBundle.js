@@ -13,9 +13,19 @@ function allowDrop(evt) {
 
 const drop = action => evt => {
     evt.preventDefault();
-    var data = evt.dataTransfer.getData("text");
+    const data = evt.dataTransfer.getData("text");
     evt.target.classList.remove("drop");
     action(data, evt.target.id);
+};
+
+const isNull = it => null === it || undefined === it;
+
+const NullSafe = x => {
+    const maywrap = y => !isNull(y) && y.then ? y : NullSafe(y) ;
+    return {
+       then:  fn => maywrap( isNull(x) ? x : fn(x) ),
+       value: () => x,
+    }
 };
 
 // adapted from
@@ -71,15 +81,15 @@ function mini(view, state, root, onRefreshed=(x=>x)) {
         return element;
     }
     function refresh() {
-        const focusElement = document.querySelector(":focus");
-        if (focusElement) {state.focussed = selectorFor(focusElement);}
-        const newView = render(view(act, state), root);
+        const focusSelector = NullSafe(":focus").then( sel => document.querySelector(sel)).then(selectorFor).value();
+        const newView = render(view(act, state));
         root.replaceChild(newView, place);
         place = newView;
-        state = onRefreshed(state) || state;
+        NullSafe(focusSelector).then( sel => document.querySelector(sel) ).then( el => el.focus());
+        NullSafe(onRefreshed(state)).then(newState => state = newState);
     }
     function act(action) { return event => {
-        const t = action(state, event); state = t === undefined ? state : t;
+        NullSafe(action(state, event)).then( newState => state = newState) ;
         refresh();
     }   }
 }
@@ -383,10 +393,4 @@ const view$4 = (act, state) =>
         h("div",{id:"status"}, state.status),
     ]);
 
-mini(view$4, state, content, state => {
-    state.status = "";
-    if (state.focussed) {
-        const toFocus = document.querySelector(state.focussed);
-        if (toFocus) toFocus.focus();
-    }
-});
+mini(view$4, state, content, state => {state.status = "";} );
