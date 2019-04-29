@@ -16,7 +16,7 @@ const actions = {
         state.developers.push(proxy);
         create({})
             .then ( dev => {
-                Object.getOwnPropertyNames(dev).forEach( name => proxy[name] = dev[name]);
+                Object.assign(proxy, dev); // fill proxy with values from dev
                 state.status = "new developer with id "+dev.id+" added";
                 act(id)();
             }).catch( err => {
