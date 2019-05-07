@@ -375,6 +375,50 @@ churchSuite.add("choice", assert => {
 
 churchSuite.run();
 
+const progressStyle = (pct, redOnGreen) => {
+    const red   = "rgba(255,0,0, 0.7)";
+    const green = "rgba(115,153,150,0.7)";
+    return redOnGreen
+        ? `background: linear-gradient(90deg, ${red}, ${red} ${pct}%, ${green} ${pct}%, ${green} );`
+        : `background: linear-gradient(90deg, ${green}, ${green} ${pct}%, ${red} ${pct}%, ${red} );`;
+};
+
+const isNull = it => null === it || undefined === it;
+
+const NullSafe = x => {
+    const maywrap = y => !isNull(y) && y.then ? y : NullSafe(y) ;
+    return {
+       then:  fn => maywrap( isNull(x) ? x : fn(x) ),
+       value: () => x,
+    }
+};
+
+// adapted from
+// https://stackoverflow.com/questions/4588119/get-elements-css-selector-when-it-doesnt-have-an-id
+function selectorFor(element) {
+    const names = [];
+    while (element.parentNode) {
+        if (element.id && isNaN(element.id)) { // numbers can be used in ids but they do not work in selectors
+            names.unshift('#' + element.id);
+            break;
+        } else {
+            if (element === element.ownerDocument.documentElement) {
+                names.unshift(element.tagName);
+            } else {
+                let count = 1;
+                let e = element;
+                while (e.previousElementSibling) {
+                    e = e.previousElementSibling;
+                    count++;
+                }
+                names.unshift(element.tagName + ":nth-child(" + count + ")");
+            }
+            element = element.parentNode;
+        }
+    }
+    return names.join(" > ");
+}
+
 function h(name, attributes, node) {
     const children =
         node instanceof Array
@@ -391,27 +435,26 @@ function mini(view, state, root, onRefreshed=(x=>x)) {
     root.appendChild(place);
 
     function render(node) {
-        if (typeof node === "string" ||
-            typeof node === "number") {
+        if (typeof node === "string" || typeof node === "number") {
             return document.createTextNode(node)
         }
         const element = document.createElement(node.name);
         Object.entries(node.attributes).forEach(([key, value]) =>
-            typeof value === "function"
-                ? element.addEventListener(key, value)
-                : element.setAttribute(key, value)
+            typeof value === "function" ? element.addEventListener(key, value) : element.setAttribute(key, value)
         );
         node.children.forEach(child => element.appendChild(render(child)));
         return element;
     }
     function refresh() {
-        const newView = render(view(act, state), root);
+        const focusSelector = NullSafe(":focus").then( sel => document.querySelector(sel)).then(selectorFor).value();
+        const newView = render(view(act, state));
         root.replaceChild(newView, place);
         place = newView;
-        state = onRefreshed(state) || state;
+        NullSafe(focusSelector).then( sel => document.querySelector(sel) ).then( el => el.focus());
+        NullSafe(onRefreshed(state)).then(newState => state = newState);
     }
     function act(action) { return event => {
-        const t = action(state, event); state = t === undefined ? state : t;
+        NullSafe(action(state, event)).then( newState => state = newState) ;
         refresh();
     }   }
 }
@@ -462,14 +505,6 @@ miniSuite.add("counter", assert => {
 
 
 miniSuite.run();
-
-const progressStyle = (pct, redOnGreen) => {
-    const red   = "rgba(255,0,0, 0.7)";
-    const green = "rgba(115,153,150,0.7)";
-    return redOnGreen
-        ? `background: linear-gradient(90deg, ${red}, ${red} ${pct}%, ${green} ${pct}%, ${green} );`
-        : `background: linear-gradient(90deg, ${green}, ${green} ${pct}%, ${red} ${pct}%, ${red} );`;
-};
 
 /**
  * @module developerService, LCRUD services for developers, like all modules this service is a singleton

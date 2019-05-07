@@ -1,3 +1,4 @@
+import { select, selectorFor, NullSafe } from "../components/helper.js";
 export { h, mini }
 
 function h(name, attributes, node) {
@@ -16,27 +17,26 @@ function mini(view, state, root, onRefreshed=(x=>x)) {
     root.appendChild(place);
 
     function render(node) {
-        if (typeof node === "string" ||
-            typeof node === "number") {
+        if (typeof node === "string" || typeof node === "number") {
             return document.createTextNode(node)
         }
         const element = document.createElement(node.name);
         Object.entries(node.attributes).forEach(([key, value]) =>
-            typeof value === "function"
-                ? element.addEventListener(key, value)
-                : element.setAttribute(key, value)
+            typeof value === "function" ? element.addEventListener(key, value) : element.setAttribute(key, value)
         );
         node.children.forEach(child => element.appendChild(render(child)));
         return element;
     }
     function refresh() {
-        const newView = render(view(act, state), root);
+        const focusSelector = NullSafe(":focus").then(select).then(selectorFor).value();
+        const newView = render(view(act, state));
         root.replaceChild(newView, place);
         place = newView;
-        state = onRefreshed(state) || state;
+        NullSafe(focusSelector).then(select).then( el => el.focus());
+        NullSafe(onRefreshed(state)).then(newState => state = newState);
     }
     function act(action) { return event => {
-        const t = action(state, event); state = t === undefined ? state : t;
+        NullSafe(action(state, event)).then( newState => state = newState) ;
         refresh();
     }   }
 }

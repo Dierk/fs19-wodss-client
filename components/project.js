@@ -15,6 +15,8 @@ const actions = {
 
 const addPro = actions.addPro;
 
+const roundOneDigit = num => Math.round(num * 10) / 10;
+
 const getFTEs = project =>
     project.assigned.reduce( (sum, assignment) => sum + assignment.assignedPCT / 100 ,0);
 
@@ -23,6 +25,7 @@ const onDrop = (project, act) => drop( (devId, to) =>
     ? act(state => {state.status = `Drag and drop did not work. Do not drag the image. Please try again.`}) ()
     : act(assign(Number(devId), project)) ()
 );
+
 
 const view = project => (act, state) =>
     h("div", {
@@ -46,7 +49,7 @@ const view = project => (act, state) =>
         h("div", {
             class: "load",
             style: progressStyle(getFTEs(project) * 100 / project.needsFTE, false ),
-        }, project.needsFTE - getFTEs(project) ),
+        }, roundOneDigit(project.needsFTE - getFTEs(project) )),
         h("div", { class: "assignments"},
             project.assigned.map( assignment => assignView(project, assignment)(act, state) )
         ),

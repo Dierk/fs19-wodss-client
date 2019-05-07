@@ -14,7 +14,7 @@ const state = {
     endDate:    new Date(),
     developers: [ ],
     projects:   [ ],
-    status:     ""
+    status:     "",
 };
 
 const actions = {
@@ -41,4 +41,4 @@ const view = (act, state) =>
         h("div",{id:"status"}, state.status),
     ]);
 
-mini(view, state, content, state => state.status = "");
+mini(view, state, content, state => {state.status = "";} );
