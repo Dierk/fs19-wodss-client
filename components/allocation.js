@@ -15,7 +15,6 @@ const state = {
     developers: [ ],
     projects:   [ ],
     status:     "",
-    focussed:   null, // keeping track of the focussed element, if any, as a css selector
 };
 
 const actions = {
