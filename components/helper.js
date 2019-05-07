@@ -1,5 +1,5 @@
 
-export {progressStyle, allowDrop, drop, selectorFor, NullSafe}
+export {progressStyle, allowDrop, drop, select, selectorFor, NullSafe}
 
 const progressStyle = (pct, redOnGreen) => {
     const red   = "rgba(255,0,0, 0.7)";
@@ -30,6 +30,8 @@ const NullSafe = x => {
        value: () => x,
     }
 };
+
+const select = cssSelector => document.querySelector(cssSelector);
 
 // adapted from
 // https://stackoverflow.com/questions/4588119/get-elements-css-selector-when-it-doesnt-have-an-id
