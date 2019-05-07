@@ -3,12 +3,8 @@
 [Project allocation async](https://dierk.github.io/fs19-wodss-client/ProjectAllocation.html)\
 [Project allocation bundle](https://dierk.github.io/fs19-wodss-client/ProjectAllocationBundle.html)
 
-
 [AllTests from bundle](https://dierk.github.io/fs19-wodss-client/allTests.html)\
 [AllTests asynchronous](https://dierk.github.io/fs19-wodss-client/allTestsAsync.html)
-
-
-For proper focus handling see the focus_handling branch.
 
 ## Build instructions
 
