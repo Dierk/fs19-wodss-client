@@ -28,6 +28,8 @@ const NullSafe = x => {
     }
 };
 
+const select = cssSelector => document.querySelector(cssSelector);
+
 // adapted from
 // https://stackoverflow.com/questions/4588119/get-elements-css-selector-when-it-doesnt-have-an-id
 function selectorFor(element) {
@@ -81,11 +83,11 @@ function mini(view, state, root, onRefreshed=(x=>x)) {
         return element;
     }
     function refresh() {
-        const focusSelector = NullSafe(":focus").then( sel => document.querySelector(sel)).then(selectorFor).value();
+        const focusSelector = NullSafe(":focus").then(select).then(selectorFor).value();
         const newView = render(view(act, state));
         root.replaceChild(newView, place);
         place = newView;
-        NullSafe(focusSelector).then( sel => document.querySelector(sel) ).then( el => el.focus());
+        NullSafe(focusSelector).then(select).then( el => el.focus());
         NullSafe(onRefreshed(state)).then(newState => state = newState);
     }
     function act(action) { return event => {
@@ -209,7 +211,7 @@ const actions$1 = {
         state.developers.push(proxy);
         create({})
             .then ( dev => {
-                Object.getOwnPropertyNames(dev).forEach( name => proxy[name] = dev[name]);
+                Object.assign(proxy, dev); // fill proxy with values from dev
                 state.status = "new developer with id "+dev.id+" added";
                 act(id)();
             }).catch( err => {
@@ -321,6 +323,8 @@ const actions$3 = {
 
 const addPro = actions$3.addPro;
 
+const roundOneDigit = num => Math.round(num * 10) / 10;
+
 const getFTEs = project =>
     project.assigned.reduce( (sum, assignment) => sum + assignment.assignedPCT / 100 ,0);
 
@@ -329,6 +333,7 @@ const onDrop = (project, act) => drop( (devId, to) =>
     ? act(state => {state.status = `Drag and drop did not work. Do not drag the image. Please try again.`;}) ()
     : act(assign(Number(devId), project)) ()
 );
+
 
 const view$3 = project => (act, state) =>
     h("div", {
@@ -352,7 +357,7 @@ const view$3 = project => (act, state) =>
         h("div", {
             class: "load",
             style: progressStyle(getFTEs(project) * 100 / project.needsFTE, false ),
-        }, project.needsFTE - getFTEs(project) ),
+        }, roundOneDigit(project.needsFTE - getFTEs(project) )),
         h("div", { class: "assignments"},
             project.assigned.map( assignment => view$2(project, assignment)(act, state) )
         ),
@@ -370,7 +375,6 @@ const state = {
     developers: [ ],
     projects:   [ ],
     status:     "",
-    focussed:   null, // keeping track of the focussed element, if any, as a css selector
 };
 
 const view$4 = (act, state) =>

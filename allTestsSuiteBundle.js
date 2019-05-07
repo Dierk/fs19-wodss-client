@@ -393,6 +393,8 @@ const NullSafe = x => {
     }
 };
 
+const select = cssSelector => document.querySelector(cssSelector);
+
 // adapted from
 // https://stackoverflow.com/questions/4588119/get-elements-css-selector-when-it-doesnt-have-an-id
 function selectorFor(element) {
@@ -446,11 +448,11 @@ function mini(view, state, root, onRefreshed=(x=>x)) {
         return element;
     }
     function refresh() {
-        const focusSelector = NullSafe(":focus").then( sel => document.querySelector(sel)).then(selectorFor).value();
+        const focusSelector = NullSafe(":focus").then(select).then(selectorFor).value();
         const newView = render(view(act, state));
         root.replaceChild(newView, place);
         place = newView;
-        NullSafe(focusSelector).then( sel => document.querySelector(sel) ).then( el => el.focus());
+        NullSafe(focusSelector).then(select).then( el => el.focus());
         NullSafe(onRefreshed(state)).then(newState => state = newState);
     }
     function act(action) { return event => {
@@ -535,7 +537,7 @@ const actions = {
         state.developers.push(proxy);
         create({})
             .then ( dev => {
-                Object.getOwnPropertyNames(dev).forEach( name => proxy[name] = dev[name]);
+                Object.assign(proxy, dev); // fill proxy with values from dev
                 state.status = "new developer with id "+dev.id+" added";
                 act(id)();
             }).catch( err => {
